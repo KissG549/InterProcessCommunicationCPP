@@ -89,7 +89,7 @@ int main(int pArgC, char* pArgV[])
             std::atoi(addrPair.second.c_str())
         );
     }
-    catch (Exception& e)
+    catch (std::exception& e)
     {
         std::cout << e.what() << std::endl;
     }

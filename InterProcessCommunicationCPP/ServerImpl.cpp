@@ -26,9 +26,8 @@ void ServerImpl::run(std::string& pServerAddr, int pPort)
 
 	static const int bufferLength = 1024;
 
-	int iSendResult;
-	char recvbuf[bufferLength];
-
+	int iSendResult = 0;
+	char recvbuf[bufferLength]{};
 
 	// Create a SOCKET for connecting to server
 	mServerSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -47,8 +46,13 @@ void ServerImpl::run(std::string& pServerAddr, int pPort)
 	serverAddrInfo.ai_flags = AI_PASSIVE;
 	inet_pton(AF_INET, pServerAddr.c_str(), serverAddrInfo.ai_addr);
 
+	sockaddr_in serverListener;
+	serverListener.sin_family = AF_INET;
+	serverListener.sin_addr.s_addr = inet_addr(pServerAddr.c_str());
+	serverListener.sin_port = htons(pPort);
+
 	// Setup the TCP listening socket
-	int ret = bind(mServerSocket, serverAddrInfo.ai_addr, (int)serverAddrInfo.ai_addrlen);
+	int ret = bind(mServerSocket, (SOCKADDR *)&serverListener, sizeof(serverListener));
 	if (ret == SOCKET_ERROR) {
 		std::string errorMsg = "bind failed with error: ";
 		errorMsg.append(std::to_string(WSAGetLastError()));
