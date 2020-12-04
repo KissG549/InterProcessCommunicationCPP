@@ -82,10 +82,17 @@ int main(int pArgC, char* pArgV[])
         std::cout << "<Running in server mode>" << std::endl;
     }
 
-    application->run( 
-        addrPair.first, 
-        std::atoi(addrPair.second.c_str())
-    );
+    try
+    {
+        application->run(
+            addrPair.first,
+            std::atoi(addrPair.second.c_str())
+        );
+    }
+    catch (Exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
 	return 0;
 }

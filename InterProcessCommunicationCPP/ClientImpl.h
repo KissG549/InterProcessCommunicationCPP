@@ -3,18 +3,32 @@
 #include <future>
 
 #if defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
-//
-//#include <windows.h>
-#include <WinSock2.h>
-
+    //
+    //#include <windows.h>
+    #include <WinSock2.h>
+    #include <WS2tcpip.h>
 #endif // 
+
 
 class ClientImpl :
     public IIPCAppBase
 {
 public:
-    ClientImpl();
-    ~ClientImpl();
+    ClientImpl()
+        :mSocket(mSocket), mServerAddr(), mSenderInfo(), mRecBuffer("")
+    {
+        mFutureObj = mExitSignal.get_future();
+        mSocket = INVALID_SOCKET;
+    }
+
+    ~ClientImpl() 
+    {
+        if (mSocket != INVALID_SOCKET)
+        {
+            closesocket(mSocket);
+            WSACleanup();
+        }
+    }
 
     void run(std::string& pServerAddr, int pPort) override;
 
@@ -25,15 +39,14 @@ private:
     SOCKADDR_IN mServerAddr;
     SOCKADDR_IN mSenderInfo;
     /* END form WinSock2 */
-    std::string mBuffer;
-//    std::atomic_bool mDone;
+    std::string mRecBuffer;
 
     std::promise<void> mExitSignal;
     std::future<void> mFutureObj;
 
-    bool connect(std::string pServerAddr, int pPort);
+    bool connectToServer(std::string pServerAddr, int pPort);
     void disconnect();
-    static void receive(ClientImpl* pClient);
-    int send(std::string pMessage);
+    void receive();
+    int sendMessage(std::string& pMessage);
 };
 

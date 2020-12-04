@@ -140,11 +140,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ClientImpl.cpp" />
+    <ClCompile Include="DataEncoderImpl.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ServerImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientImpl.h" />
+    <ClInclude Include="DataEncoderImpl.h" />
     <ClInclude Include="IPCAppBase.h" />
     <ClInclude Include="ServerImpl.h" />
   </ItemGroup>
