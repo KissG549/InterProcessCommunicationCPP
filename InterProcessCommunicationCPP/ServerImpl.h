@@ -31,6 +31,6 @@ private:
     void receive();
     int sendMessage(std::string pMessage);
 
-    void closeConnetions();
+    void closeConnections();
 
 };

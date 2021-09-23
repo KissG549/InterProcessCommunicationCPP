@@ -15,7 +15,10 @@ class ClientImpl :
 {
 public:
     ClientImpl()
-        :mSocket(mSocket), mServerAddr(), mSenderInfo(), mRecBuffer("")
+        :mSocket(mSocket), 
+        mServerAddr(), 
+        mSenderInfo(),
+        mReceiveBuffer("")
     {
         mFutureObj = mExitSignal.get_future();
         mSocket = INVALID_SOCKET;
@@ -34,15 +37,13 @@ public:
 
 private:
 
-    /* from WinSock2 */
-    SOCKET mSocket;
+    SOCKET      mSocket;
     SOCKADDR_IN mServerAddr;
     SOCKADDR_IN mSenderInfo;
-    /* END form WinSock2 */
-    std::string mRecBuffer;
+    std::string mReceiveBuffer;
 
     std::promise<void> mExitSignal;
-    std::future<void> mFutureObj;
+    std::future<void>  mFutureObj;
 
     bool connectToServer(std::string pServerAddr, int pPort);
     void disconnect();

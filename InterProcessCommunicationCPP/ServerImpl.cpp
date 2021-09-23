@@ -26,7 +26,7 @@ void ServerImpl::run(std::string& pServerAddr, int pPort)
 
 	static const int bufferLength = 1024;
 
-	int iSendResult = 0;
+	int iSendResult{};
 	char recvbuf[bufferLength]{};
 
 	// Create a SOCKET for connecting to server
@@ -61,7 +61,7 @@ void ServerImpl::run(std::string& pServerAddr, int pPort)
 		throw std::runtime_error(errorMsg);
 	}
 
-	std::thread listeningThread( &ServerImpl::listening, this);
+	std::thread listeningThread{ &ServerImpl::listening, this };
 
 	listeningThread.join();
 }
@@ -134,7 +134,7 @@ int ServerImpl::sendMessage(std::string pMessage)
 	return 0;
 }
 
-void ServerImpl::closeConnetions()
+void ServerImpl::closeConnections()
 {
 	int closeResult = shutdown(mClientSocket, SD_BOTH);
 	if (closeResult == SOCKET_ERROR)

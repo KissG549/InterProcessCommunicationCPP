@@ -30,14 +30,14 @@ void ClientImpl::run(std::string& pServerAddr, int pPort)
     }
 
     /* Receive packets on independent thread */
-    std::thread receiverTh( &ClientImpl::receive, this);
+    std::thread receiverTh{ &ClientImpl::receive, this };
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     mExitSignal.set_value();
 
     std::cout << "Ask receiver thread to stop." << std::endl;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     std::cout << "Receiver thread timed out." << std::endl;
 
@@ -84,17 +84,13 @@ bool ClientImpl::connectToServer(std::string pServerAddr, int pPort)
     // mServerAddr.sin_addr.s_addr = inet_addr(pServerAddr.c_str());
     inet_pton(AF_INET, pServerAddr.c_str(), &mServerAddr.sin_addr.s_addr);
 
-    int connectReturnValue = connect(mSocket, (SOCKADDR*)&mServerAddr, sizeof(mServerAddr));
+    int connected = connect(mSocket, (SOCKADDR*)&mServerAddr, sizeof(mServerAddr));
 
-    if (connectReturnValue != 0)
+    if (connected)
     {
         std::cout << "Failed to connect to the server (" 
-            << pServerAddr 
-            << ":" 
-            << pPort 
-            << "): " 
-            << WSAGetLastError() 
-            << std::endl;
+            << pServerAddr << ":" << pPort << "): " 
+            << WSAGetLastError() << std::endl;
 
         closesocket(mSocket);
         WSACleanup();
@@ -102,11 +98,7 @@ bool ClientImpl::connectToServer(std::string pServerAddr, int pPort)
     }
 
     std::cout << "Connected to the server ("
-        << pServerAddr
-        << ":"
-        << pPort
-        << "): "
-        << std::endl;
+        << pServerAddr << ":" << pPort << "): " << std::endl;
 
     getsockname(mSocket, (SOCKADDR*)&mServerAddr, (int*)sizeof(mServerAddr));
 
@@ -133,7 +125,7 @@ void ClientImpl::receive()
         // Append to the buffer and process it on otherplace
         if (bytesReceived > 0)
         {
-            mRecBuffer.append(buffer);
+            mReceiveBuffer.append(buffer);
         }
         else if (bytesReceived == 0)
         {
@@ -144,7 +136,7 @@ void ClientImpl::receive()
             std::cout << "Receive error: " << WSAGetLastError();
         }
 
-        DataEncoderImpl::processIncomingMessage(mRecBuffer);
+        DataEncoderImpl::processIncomingMessage(mReceiveBuffer);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
